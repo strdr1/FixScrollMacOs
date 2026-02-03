@@ -221,11 +221,21 @@ class ScrollFixerApp(rumps.App):
                         0 # horizontal
                     )
                     
+                    # Fix: Set location to match original event (RDP might ignore events at 0,0)
+                    location = Quartz.CGEventGetLocation(event)
+                    Quartz.CGEventSetLocation(new_event, location)
+                    
+                    # Fix: Copy flags (modifiers like Cmd/Shift)
+                    flags = Quartz.CGEventGetFlags(event)
+                    Quartz.CGEventSetFlags(new_event, flags)
+                    
                     # Ensure it is NOT continuous
                     Quartz.CGEventSetIntegerValueField(new_event, Quartz.kCGScrollWheelEventIsContinuous, 0)
                     
                     # Post it
                     Quartz.CGEventPost(Quartz.kCGHIDEventTap, new_event)
+                    
+                    logging.info(f"ACTION: Posted Scroll Steps={steps} at {location}")
             
             # Suppress the original continuous event
             return None
