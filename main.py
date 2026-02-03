@@ -38,7 +38,7 @@ class ScrollFixerApp(rumps.App):
         
         # Default settings
         self.is_active = True
-        self.sensitivity = 3  # Default sensitivity (1-5)
+        self.sensitivity = 5  # Default sensitivity (1-5) - Start Max Sensitivity
         self.accumulator_y = 0.0
         
         # Menu items
@@ -96,13 +96,13 @@ class ScrollFixerApp(rumps.App):
         # Level 1 (Slow/Precise) -> High threshold (requires more movement)
         # Level 5 (Fast) -> Low threshold (requires less movement)
         mapping = {
-            1: 100,
-            2: 70,
-            3: 40,
-            4: 20,
-            5: 10
+            1: 50,
+            2: 30,
+            3: 20,
+            4: 10,
+            5: 5
         }
-        return mapping.get(self.sensitivity, 40)
+        return mapping.get(self.sensitivity, 20)
 
     def check_permissions(self):
         # Dictionary for options: kAXTrustedCheckOptionPrompt = True means "Show popup if not trusted"
@@ -164,9 +164,6 @@ class ScrollFixerApp(rumps.App):
                 # Discrete event (mouse wheel or injected), pass through
                 return event
             
-            # Log continuous scroll event
-            logging.info(f"DETECTED: Continuous Scroll Event. App: {AppKit.NSWorkspace.sharedWorkspace().frontmostApplication().bundleIdentifier()}")
-
             # Check active application
             active_app = AppKit.NSWorkspace.sharedWorkspace().frontmostApplication()
             
@@ -189,6 +186,9 @@ class ScrollFixerApp(rumps.App):
             # If delta is 0, ignore
             if delta_y == 0:
                 return event
+
+            # Log continuous scroll event (Only non-zero)
+            logging.info(f"DETECTED: Continuous Scroll Event. App: {AppKit.NSWorkspace.sharedWorkspace().frontmostApplication().bundleIdentifier()}")
 
             # Log input
             logging.info(f"INPUT: DeltaY={delta_y} (Continuous)")
