@@ -178,12 +178,16 @@ class ScrollFixerApp(rumps.App):
 
             # We are in target app and it is a continuous scroll
             
-            # Get delta (Y axis)
-            # Fix: Use Axis2 for Vertical (as per some reports on modern macOS/HID taps)
-            # Note: Standard documentation says Axis1 is Y, but we follow specific fix instructions.
-            delta_y = Quartz.CGEventGetIntegerValueField(event, Quartz.kCGScrollWheelEventPointDeltaAxis2)
+            # Get delta (Y axis) with Fallback logic
+            # Axis 1 = Vertical (Standard)
+            # Axis 2 = Horizontal (Sometimes used for vertical on Apple Silicon/Magic Mouse quirks)
             
-            # If delta is 0, ignore
+            delta_y = Quartz.CGEventGetIntegerValueField(event, Quartz.kCGScrollWheelEventPointDeltaAxis1)
+            
+            if delta_y == 0:
+                 delta_y = Quartz.CGEventGetIntegerValueField(event, Quartz.kCGScrollWheelEventPointDeltaAxis2)
+            
+            # If delta is still 0, ignore
             if delta_y == 0:
                 return event
 
