@@ -217,8 +217,11 @@ class ScrollFixerApp(rumps.App):
                     # 0 = kCGScrollEventUnitLine (Lines)
                     # 1 = kCGScrollEventUnitPixel (Pixels)
                     
+                    # Fix: Use source from original event to mimic hardware
+                    source = Quartz.CGEventCreateSourceFromEvent(event)
+                    
                     new_event = Quartz.CGEventCreateScrollWheelEvent(
-                        None,
+                        source,
                         0, # Units: Lines
                         1, # number of wheels
                         steps,
